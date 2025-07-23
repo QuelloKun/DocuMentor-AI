@@ -85,4 +85,4 @@ config/secrets.yaml
 
 # Large dataset files
 *.hdf5
-*.h5 
+*.h5 documentor_venv/
