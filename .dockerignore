@@ -1,0 +1,21 @@
+# Git and OS files
+.git
+.gitignore
+.dockerignore
+README.md
+
+# Virtual environment
+documentor_venv/
+.env
+
+# IDE and cache files
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+
+# Logs and experiment tracking
+logs/
+
+# Docker-related files
+Dockerfile.backend
