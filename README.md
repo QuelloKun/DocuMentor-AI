@@ -65,7 +65,7 @@ git lfs install
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/QuelloKun/DocuMentor-AI.git
 cd DocuMentor-AI
 
 # Pull LFS files (model weights)
