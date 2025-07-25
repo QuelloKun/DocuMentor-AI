@@ -1,0 +1,34 @@
+# .dockerignore
+
+# Git and OS files
+.git
+.gitignore
+.dockerignore
+README.md
+Project Plan.md
+
+# Virtual environment
+documentor_venv/
+venv/
+env/
+.env
+
+# IDE and cache files
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+
+# Logs and experiment tracking
+wandb/
+logs/
+
+# Raw data and testing scripts (not needed for running the app)
+data/
+test_model.py
+finetune_llama.py
+
+# Docker-related files that don't need to be in the image
+docker-compose.yml
+Dockerfile.frontend
+Dockerfile.backend
