@@ -107,14 +107,12 @@ DocuMentor-AI/
 ├── app.py                 # Streamlit frontend
 ├── backend.py             # FastAPI backend
 ├── rag_pipeline.py        # RAG implementation
-├── finetune_llama.py      # Model fine-tuning script
-├── test_model.py          # Model testing utilities
 ├── requirements.txt       # Python dependencies
 ├── docker-compose.yml     # Multi-service orchestration
 ├── Dockerfile.frontend    # Frontend container
 ├── Dockerfile.backend     # Backend container
 ├── models/                # Fine-tuned model weights
-└── data/                  # Training and processed data
+└── assets/                # UI screenshots and media
 ```
 
 ## Technical Details
@@ -147,18 +145,6 @@ The fine-tuned model achieves strong performance on technical Q&A:
 - **Git** with **Git LFS**
 
 ## Development
-
-### Fine-tuning
-
-```bash
-python finetune_llama.py
-```
-
-### Testing
-
-```bash
-python test_model.py
-```
 
 ### API Documentation
 

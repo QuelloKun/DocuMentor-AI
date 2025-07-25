@@ -29,7 +29,6 @@ streamlit>=1.30.0
 fastapi>=0.110.0
 uvicorn>=0.22.0
 requests>=2.31.0
-
 # Monitoring and Logging
 wandb>=0.16.0
 tqdm>=4.65.0
