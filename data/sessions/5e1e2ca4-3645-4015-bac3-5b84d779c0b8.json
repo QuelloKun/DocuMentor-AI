@@ -1,0 +1,12 @@
+{
+  "session_id": "5e1e2ca4-3645-4015-bac3-5b84d779c0b8",
+  "name": "Paper 2",
+  "messages": [
+    {
+      "role": "assistant",
+      "content": "Hello! Upload some PDFs and I'll help you analyze them."
+    }
+  ],
+  "docs_processed": false,
+  "last_updated": "2025-07-25T21:56:31.118695"
+}

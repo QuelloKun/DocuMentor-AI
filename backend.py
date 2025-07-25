@@ -1,9 +1,14 @@
 # backend.py
 
 import pickle
+import warnings
 from typing import Dict, Optional
 
 from fastapi import FastAPI, HTTPException
+
+# Suppress deprecation warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from pydantic import BaseModel

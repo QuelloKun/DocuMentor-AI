@@ -2,9 +2,18 @@
 
 import os
 import tempfile
+import warnings
 from typing import List, Optional
 
 import torch
+
+# Suppress deprecation warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
+
+# Suppress HTTP retry logs from model downloading
+os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders import PyPDFLoader
@@ -20,6 +29,11 @@ EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
 def load_llm() -> HuggingFacePipeline:
     """Load the fine-tuned model for inference."""
+    if not torch.cuda.is_available():
+        raise RuntimeError("CUDA is required to run this model. Please ensure you have a GPU with CUDA support.")
+    
+    print(f"Using device: cuda (GPUs available: {torch.cuda.device_count()})")
+    
     tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
     
     model = AutoModelForCausalLM.from_pretrained(
@@ -74,13 +88,22 @@ def create_rag_chain(llm: HuggingFacePipeline, vector_store: FAISS) -> Optional[
     if not vector_store:
         return None
     
-    prompt_template = """Use the following context to answer the question. If the context doesn't contain the answer, state that you cannot find the answer in the provided documents.
+    prompt_template = """You are a helpful AI assistant that answers questions based on the provided documents. Use the following context to provide a clear, comprehensive answer.
 
-Context: {context}
+INSTRUCTIONS:
+- Give a direct, well-structured answer based on the provided context
+- If the information is incomplete, say so and provide what you can find
+- If the context doesn't contain relevant information, clearly state that you cannot find the answer in the provided documents
+- Format your response clearly with proper structure (use bullet points, numbered lists, or paragraphs as appropriate)
+- Do not repeat the question in your answer
+- Be concise but thorough
 
-Question: {question}
+CONTEXT:
+{context}
 
-Answer:"""
+QUESTION: {question}
+
+ANSWER:"""
     
     prompt = PromptTemplate(
         template=prompt_template,

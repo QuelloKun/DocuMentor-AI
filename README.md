@@ -6,9 +6,10 @@ An intelligent document analysis system that combines fine-tuned language models
 
 - **Fine-tuned LLM**: Qwen2.5-3B-Instruct optimized for document Q&A
 - **RAG Pipeline**: Efficient document retrieval and context-aware responses
-- **Web Interface**: Clean Streamlit frontend for document upload and chat
+- **Web Interface**: Clean Streamlit frontend with session management
 - **Dockerized**: Production-ready containerized deployment
-- **GPU Optimized**: Memory-efficient inference with 4-bit quantization
+- **GPU Required**: Optimized for NVIDIA GPU inference with CUDA support
+- **Persistent Sessions**: Chat history and document processing saved between sessions
 
 ## Interface
 
@@ -30,125 +31,114 @@ An intelligent document analysis system that combines fine-tuned language models
                        └──────────────────┘
 ```
 
-## Setup
+## Prerequisites
 
-### Install Prerequisites
+- **Linux** system (Ubuntu/Debian recommended)
+- **NVIDIA GPU** with 8GB+ VRAM and CUDA support
+- **Docker** with **NVIDIA Container Toolkit**
+- **Git** with **Git LFS** (for model files)
 
-#### NVIDIA Container Toolkit (for Docker GPU support)
+### Install NVIDIA Container Toolkit
+
 ```bash
-# Ubuntu/Debian
+# Add NVIDIA package repository
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
 curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
   sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
   sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+# Install and configure
 sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
 sudo systemctl restart docker
 ```
 
-> For other operating systems, see the [official NVIDIA documentation](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+### Install Git LFS
 
-#### Git LFS (for model files)
 ```bash
-# Ubuntu/Debian
 sudo apt install git-lfs
-
-# macOS
-brew install git-lfs
-
-# Initialize in your repo
 git lfs install
 ```
 
 ## Quick Start
-
-### Using Docker (Linux/WSL2)
 
 ```bash
 # Clone the repository
 git clone https://github.com/QuelloKun/DocuMentor-AI.git
 cd DocuMentor-AI
 
-# Pull LFS files (model weights)
+# Pull model files
 git lfs pull
 
-# Start the services
-docker-compose up -d
+# Start backend (GPU required)
+./run_backend.sh
 
-# Access the application
-open http://localhost:8501
-```
+# In another terminal, start frontend
+./run_frontend.sh
 
-> **Note for macOS users**: Docker GPU support is not available on macOS. Please use the local development setup below instead.
-
-### Local Development
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Start backend
-uvicorn backend:app --host 0.0.0.0 --port 8000
-
-# Start frontend (in another terminal)
-streamlit run app.py
+# Access the application at http://localhost:8501
 ```
 
 ## Usage
 
-1. **Upload Documents**: Use the sidebar to upload PDF files
-2. **Process**: Click "Process Documents" to analyze your files
-3. **Ask Questions**: Use the chat interface to query your documents
-4. **Get Answers**: Receive contextual responses based on document content
+### Running the Application
 
-## Project Structure
+1. **Start Backend**: Run `./run_backend.sh` to start the GPU-accelerated backend
+2. **Start Frontend**: Run `./run_frontend.sh` to start the web interface
+3. **Access**: Open http://localhost:8501 in your browser
 
-```
-DocuMentor-AI/
-├── app.py                 # Streamlit frontend
-├── backend.py             # FastAPI backend
-├── rag_pipeline.py        # RAG implementation
-├── requirements.txt       # Python dependencies
-├── docker-compose.yml     # Multi-service orchestration
-├── Dockerfile.frontend    # Frontend container
-├── Dockerfile.backend     # Backend container
-├── models/                # Fine-tuned model weights
-└── assets/                # UI screenshots and media
-```
+### Using the Interface
+
+1. **Session Management**: 
+   - Create new sessions or load previous ones from the sidebar
+   - Rename or delete sessions as needed
+   - All chat history and document processing is automatically saved
+
+2. **Upload Documents**: 
+   - Use the sidebar to upload PDF files
+   - Click "Process Documents" to analyze your files
+   - Document processing state is remembered per session
+
+3. **Ask Questions**: 
+   - Use the chat interface to query your documents
+   - Receive contextual responses based on document content
+   - All conversations are automatically saved
 
 ## Technical Details
 
-- **Base Model**: Qwen2.5-3B-Instruct with QLoRA fine-tuning
+- **Base Model**: Qwen2.5-3B-Instruct with LoRA fine-tuning
 - **Embeddings**: all-MiniLM-L6-v2 for document vectorization
 - **Vector Store**: FAISS for efficient similarity search
 - **Text Processing**: LangChain for document splitting and RAG
-- **Deployment**: Docker with NVIDIA GPU support
+- **Deployment**: Separate Docker containers for frontend and backend
+- **Persistence**: JSON-based session storage with automatic saving
 
-## Model Performance
-
-The fine-tuned model achieves strong performance on technical Q&A:
-- Specialized for research paper content
-- Memory-efficient 4-bit quantization
-- Sub-second inference on modern GPUs
-
-## Prerequisites
-
-### For Docker Deployment (Linux/WSL2 only)
-- **Linux** or **Windows with WSL2** (macOS not supported for GPU Docker)
-- **Docker** and **Docker Compose**
-- **NVIDIA Container Toolkit** (for GPU support)
-- **NVIDIA GPU** with 8GB+ VRAM and CUDA support
-- **Git** with **Git LFS** (for model files)
-
-### For Local Development
-- **Python** 3.11+
-- **NVIDIA GPU** with 8GB+ VRAM and CUDA drivers
-- **Git** with **Git LFS**
-
-## Development
-
-### API Documentation
+## API Documentation
 
 With the backend running, visit `http://localhost:8000/docs` for interactive API documentation.
+
+## Troubleshooting
+
+### GPU Issues
+- Ensure NVIDIA drivers are installed: `nvidia-smi`
+- Verify Docker GPU support: `docker run --gpus all nvidia/cuda:11.8-devel-ubuntu22.04 nvidia-smi`
+- Check CUDA compatibility with your GPU
+
+### Memory Issues
+- Minimum 8GB VRAM required
+- Close other GPU applications before running
+- Monitor GPU memory: `nvidia-smi -l 1`
+
+### Connection Issues
+- Ensure backend is running before starting frontend
+- Check if ports 8000 and 8501 are available
+- Verify Docker containers are running: `docker ps`
+
+## Future Enhancements
+
+### Planned Features
+- [ ] **Advanced Search**: Semantic search across multiple document sessions
+- [ ] **AMD GPU Support**: Add ROCm support for AMD graphics cards
+- [ ] **Export Functionality**: Export chat history and processed documents
 
 ## License
 
